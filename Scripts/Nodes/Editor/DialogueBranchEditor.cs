@@ -52,6 +52,7 @@ namespace DialogueEditor {
 
                 //Equality
                 if (valType != ByteValue.ValueType.Bool) EditorGUILayout.PropertyField(item.FindPropertyRelative("compareMethod"), new GUIContent(), GUILayout.Width(60));
+                else EditorGUILayout.LabelField("==", GUILayout.Width(30));
                 EditorGUILayout.PropertyField(item.FindPropertyRelative("value"), new GUIContent());
                 EditorGUILayout.EndHorizontal();
             }

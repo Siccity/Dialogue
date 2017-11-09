@@ -22,8 +22,8 @@ namespace Dialogue {
                     dialogue.answers.RemoveAt(i);
                     i--;
                 }
-                dialogue.answers[i].text = GUILayout.TextField(dialogue.answers[i].text, GUILayout.Width(300));
-                NodeEditorGUILayout.PortField(new GUIContent(),target.GetOutputPort(dialogue.answers[i].portName));
+                dialogue.answers[i].text = EditorGUILayout.TextField(dialogue.answers[i].text);
+                NodeEditorGUILayout.PortField(new GUIContent(), target.GetOutputPort(dialogue.answers[i].portName), GUILayout.Width(-4));
                 GUILayout.EndHorizontal();
             }
             GUILayout.BeginHorizontal();
