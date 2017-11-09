@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using XNode;
 using XNodeEditor;
@@ -25,9 +22,9 @@ namespace Dialogue {
                     dialogue.answers.RemoveAt(i);
                     i--;
                 }
-                dialogue.answers[i].text = GUILayout.TextField(dialogue.answers[i].text);
+                dialogue.answers[i].text = GUILayout.TextField(dialogue.answers[i].text, GUILayout.Width(300));
+                NodeEditorGUILayout.PortField(new GUIContent(),target.GetOutputPort(dialogue.answers[i].portName));
                 GUILayout.EndHorizontal();
-                NodeEditorGUILayout.PortField(target.GetOutputPort(dialogue.answers[i].portName));
             }
             GUILayout.BeginHorizontal();
             EditorGUILayout.Space();

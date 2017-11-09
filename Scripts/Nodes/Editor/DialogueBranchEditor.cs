@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Dialogue;
 using UnityEditor;
@@ -12,7 +11,9 @@ namespace DialogueEditor {
         public override void OnBodyGUI() {
             DialogueBranch branch = target as DialogueBranch;
             DialogueGraph graph = branch.graph as DialogueGraph;
-            List<string> labels = graph.settings.items.Select(x => x.key).ToList();
+
+            List<DialogueSettings.Item> graphItems = new List<DialogueSettings.Item>();
+            if (graph != null && graph.settings.items != null) graphItems = new List<DialogueSettings.Item>(graph.settings.items);
 
             EditorGUILayout.BeginHorizontal();
             NodeEditorGUILayout.PropertyField(serializedObject.FindProperty("input"), true);
@@ -21,37 +22,52 @@ namespace DialogueEditor {
             NodeEditorGUILayout.PropertyField(serializedObject.FindProperty("fail"), true);
 
             EditorGUILayout.BeginVertical("Box");
-			EditorGUILayout.LabelField("Conditions");
+            EditorGUILayout.LabelField("Conditions");
             SerializedProperty condition = serializedObject.FindProperty("condition");
             for (int i = 0; i < condition.arraySize; i++) {
                 SerializedProperty item = condition.FindPropertyRelative("Array.data[" + i + "]");
                 SerializedProperty key = item.FindPropertyRelative("key");
                 SerializedProperty value = item.FindPropertyRelative("value.bytes");
+                SerializedProperty valueType = item.FindPropertyRelative("value.valueType");
 
-                Rect r = GUILayoutUtility.GetRect(new GUIContent(" "), new GUIStyle(), GUILayout.Height(EditorGUIUtility.singleLineHeight));
-                float width = r.width;
-				r.width = width * 0.4f;
-                int index = labels.IndexOf(key.stringValue);
+                EditorGUILayout.BeginHorizontal();
+                //Remove 
+                if (GUILayout.Button("-", GUILayout.Width(20))) {
+                    condition.DeleteArrayElementAtIndex(i);
+                    i--;
+                    continue;
+                }
+                //key
+                int index = graphItems.FindIndex(0, x => x.key == key.stringValue);
                 EditorGUI.BeginChangeCheck();
                 if (index == -1) index = 0;
-                index = EditorGUI.Popup(r, index, labels.ToArray());
+                index = EditorGUILayout.Popup(index, graphItems.Select(x => x.key).ToArray());
                 if (EditorGUI.EndChangeCheck()) {
-                    key.stringValue = labels[index];
+                    key.stringValue = graphItems[index].key;
                 }
-                r.x += r.width;
-				r.width = width * 0.2f;
-				EditorGUI.PropertyField(r, item.FindPropertyRelative("compareMethod"), new GUIContent());
 
-                r.x += r.width;
-				r.width = width * 0.4f;
-				EditorGUI.PropertyField(r, item.FindPropertyRelative("value"), new GUIContent());
+                //Force same type
+                ByteValue.ValueType valType = (ByteValue.ValueType) valueType.enumValueIndex;
+                if (graphItems[index].value.valueType != valType) valueType.intValue = (int) graphItems[index].value.valueType;
+
+                //Equality
+                if (valType != ByteValue.ValueType.Bool) EditorGUILayout.PropertyField(item.FindPropertyRelative("compareMethod"), new GUIContent(), GUILayout.Width(60));
+                EditorGUILayout.PropertyField(item.FindPropertyRelative("value"), new GUIContent());
+                EditorGUILayout.EndHorizontal();
             }
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+            if (GUILayout.Button("+", GUILayout.Width(20))) {
+                condition.InsertArrayElementAtIndex(condition.arraySize);
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
 
         }
 
         public override int GetWidth() {
-            return 250;
+            return 300;
         }
     }
 }

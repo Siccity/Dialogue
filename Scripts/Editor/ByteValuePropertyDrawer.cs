@@ -1,41 +1,34 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Dialogue;
 using UnityEditor;
 using UnityEngine;
 
 namespace DialogueEditor {
     [CustomPropertyDrawer(typeof(ByteValue))]
-    public class DialogueSettingsPropertyDrawer : PropertyDrawer {
+    public class ByteValuePropertyDrawer : PropertyDrawer {
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-            Rect pos = position;
-            pos.width = position.width * 0.5f;
-            property.Next(true);
-            EditorGUI.PropertyField(pos, property, new GUIContent(""), false);
-            ByteValue.ValueType valType = (ByteValue.ValueType) property.enumValueIndex;
-            pos.x += pos.width;
-            property.Next(false);
-
+            SerializedProperty bytesProperty = property.FindPropertyRelative("bytes");
+            SerializedProperty valueTypeProperty = property.FindPropertyRelative("valueType");
+            ByteValue.ValueType valType = (ByteValue.ValueType) valueTypeProperty.enumValueIndex;
             //Get bytes
-            byte[] bytes = new byte[property.arraySize];
+            byte[] bytes = new byte[bytesProperty.arraySize];
             for (int i = 0; i < bytes.Length; i++) {
-                bytes[i] = (byte) property.GetArrayElementAtIndex(i).intValue;
+                bytes[i] = (byte) bytesProperty.GetArrayElementAtIndex(i).intValue;
             }
 
             EditorGUI.BeginChangeCheck();
             //Modify bytes
-            bytes = MultiValuePropertyField(pos, bytes, valType);
+            bytes = MultiValuePropertyField(position, bytes, valType);
 
             if (EditorGUI.EndChangeCheck()) {
                 //Set bytes
-                property.ClearArray();
+                bytesProperty.ClearArray();
                 for (int i = 0; i < bytes.Length; i++) {
-                    property.InsertArrayElementAtIndex(i);
-                    property.GetArrayElementAtIndex(i).intValue = bytes[i];
+                    bytesProperty.InsertArrayElementAtIndex(i);
+                    bytesProperty.GetArrayElementAtIndex(i).intValue = bytes[i];
                 }
-                property.serializedObject.ApplyModifiedProperties();
+                bytesProperty.serializedObject.ApplyModifiedProperties();
             }
         }
 
