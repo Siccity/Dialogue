@@ -4,14 +4,15 @@ using XNode;
 using XNodeEditor;
 
 namespace Dialogue {
-    [CustomNodeEditor(typeof(DialogueNode))]
-    public class DialogueNodeEditor : NodeEditor {
+    [CustomNodeEditor(typeof(Chat))]
+    public class ChatEditor : NodeEditor {
 
         public override void OnBodyGUI() {
-            DialogueNode dialogue = target as DialogueNode;
+            Chat dialogue = target as Chat;
             GUILayout.BeginHorizontal();
-            NodeEditorGUILayout.PortField(target.GetInputPort("input"));
-            if (dialogue.answers.Count == 0) NodeEditorGUILayout.PortField(target.GetOutputPort("output"));
+            NodeEditorGUILayout.PortField(target.GetInputPort("input"), GUILayout.Width(100));
+            EditorGUILayout.Space();
+            if (dialogue.answers.Count == 0) NodeEditorGUILayout.PortField(target.GetOutputPort("output"), GUILayout.Width(100));
             GUILayout.EndHorizontal();
             NodeEditorGUILayout.PropertyField(serializedObject.FindProperty("text"));
 
@@ -29,8 +30,8 @@ namespace Dialogue {
             GUILayout.BeginHorizontal();
             EditorGUILayout.Space();
             if (GUILayout.Button("+", GUILayout.Width(30))) {
-                NodePort newport = target.AddInstanceOutput(typeof(DialogueNode.Connection));
-                dialogue.answers.Add(new DialogueNode.Answer() { text = "", portName = newport.fieldName });
+                NodePort newport = target.AddInstanceOutput(typeof(Chat.Connection));
+                dialogue.answers.Add(new Chat.Answer() { text = "", portName = newport.fieldName });
             }
             GUILayout.EndHorizontal();
         }
