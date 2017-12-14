@@ -4,7 +4,7 @@ using UnityEngine;
 
 [CreateAssetMenu(menuName = "Variable/Bool")]
 public class BoolVariable : BaseVariable<bool> {
-    public void Equals(bool value) {
-        onCondition(this.value == value);
+    public bool Equals(bool value) {
+        return this.value == value;
     }
 }

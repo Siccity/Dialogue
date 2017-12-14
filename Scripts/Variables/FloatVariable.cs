@@ -4,15 +4,15 @@ using UnityEngine;
 
 [CreateAssetMenu(menuName = "Variable/Float")]
 public class FloatVariable : BaseVariable<float> {
-    public void GreaterThan(float value) {
-        onCondition(this.value > value);
+    public bool GreaterThan(float value) {
+        return this.value > value;
     }
 
-    public void LessThan(float value) {
-        onCondition(this.value < value);
+    public bool LessThan(float value) {
+        return this.value < value;
     }
 
-    public void Equals(float value) {
-        onCondition(this.value == value);
+    public bool Equals(float value) {
+        return this.value == value;
     }
 }
