@@ -10,7 +10,8 @@ using UnityEngine;
 public class FunctionDrawer : PropertyDrawer {
 
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-		GUI.Box(position, "",(GUIStyle)"flow overlay box");
+		GUI.Box(position, "", (GUIStyle)
+			"flow overlay box");
 		position.y += 4;
 		// Using BeginProperty / EndProperty on the parent property means that
 		// prefab override logic works on the entire property.
@@ -82,10 +83,6 @@ public class FunctionDrawer : PropertyDrawer {
 						EditorGUI.PropertyField(argRect, argProp.FindPropertyRelative("objectValue"), argLabel);
 						break;
 					}
-					if (EditorGUI.EndChangeCheck()) {
-						FunctionBase function = fieldInfo.GetValue(property.serializedObject.targetObject) as FunctionBase;
-						function.ClearCache();
-					}
 
 					argRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 				}
@@ -115,7 +112,8 @@ public class FunctionDrawer : PropertyDrawer {
 		Type[] argTypes = new Type[0];
 
 		// Get return type and argument constraints
-		Type[] genericTypes = fieldInfo.FieldType.BaseType.GetGenericArguments();
+		FunctionBase dummy = GetDummyFunction(property);
+		Type[] genericTypes = dummy.GetType().BaseType.GetGenericArguments();
 		if (genericTypes != null && genericTypes.Length > 0) {
 			// The last generic argument is the return type
 			returnType = genericTypes[genericTypes.Length - 1];
@@ -177,7 +175,7 @@ public class FunctionDrawer : PropertyDrawer {
 	}
 
 	string PrettifyMethod(MethodInfo methodInfo) {
-		if (methodInfo == null) throw new ArgumentNullException("methodInfo");		
+		if (methodInfo == null) throw new ArgumentNullException("methodInfo");
 		ParameterInfo[] parms = methodInfo.GetParameters();
 		string parmnames = PrettifyTypes(parms.Select(x => x.ParameterType).ToArray());
 		return GetTypeName(methodInfo.ReturnParameter.ParameterType) + " " + methodInfo.Name + "(" + parmnames + ")";
@@ -202,8 +200,6 @@ public class FunctionDrawer : PropertyDrawer {
 	}
 
 	private void SetMethod(SerializedProperty property, MethodInfo methodInfo, bool dynamic) {
-		FunctionBase function = fieldInfo.GetValue(property.serializedObject.targetObject) as FunctionBase;
-		function.ClearCache();
 		SerializedProperty methodProp = property.FindPropertyRelative("_methodName");
 		methodProp.stringValue = methodInfo.Name;
 		SerializedProperty dynamicProp = property.FindPropertyRelative("_dynamic");
@@ -214,7 +210,6 @@ public class FunctionDrawer : PropertyDrawer {
 		for (int i = 0; i < parameters.Length; i++) {
 		argProp.FindPropertyRelative("Array.data[" + i + "].argType").enumValueIndex = (int) Arg.FromRealType(parameters[i].ParameterType);
 		}
-
 		property.serializedObject.ApplyModifiedProperties();
 		property.serializedObject.Update();
 	}
@@ -240,5 +235,17 @@ public class FunctionDrawer : PropertyDrawer {
 		}
 		height += 8;
 		return height;
+	}
+
+	private static FunctionBase GetDummyFunction(SerializedProperty prop) {
+		string stringValue = prop.FindPropertyRelative("_typeName").stringValue;
+		Type type = Type.GetType(stringValue, false);
+		FunctionBase result;
+		if (type == null) {
+			result = new Function();
+		} else {
+			result = (Activator.CreateInstance(type) as FunctionBase);
+		}
+		return result;
 	}
 }

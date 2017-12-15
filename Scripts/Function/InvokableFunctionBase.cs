@@ -12,10 +12,10 @@ public abstract class InvokableFunctionBase {
 	}
 
 	public abstract object Invoke(params object[] args);
-	
+
 	protected static void ThrowOnInvalidArg<T>(object arg) {
 		if (arg != null && !(arg is T)) {
-			throw new ArgumentException("Passed argument 'args[0]' is of the wrong type. Type:"+arg.GetType()+" Expected:" + typeof(T));
+			throw new ArgumentException("Passed argument 'args[0]' is of the wrong type. Type:" + arg.GetType() + " Expected:" + typeof(T));
 		}
 	}
 }

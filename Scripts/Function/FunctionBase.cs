@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -7,7 +8,7 @@ using Object = UnityEngine.Object;
 
 /// <summary> An inspector-friendly serializable function </summary>
 [System.Serializable]
-public abstract class FunctionBase {
+public abstract class FunctionBase : ISerializationCallbackReceiver {
 
 	/// <summary> Target object </summary>
 	public Object target { get { return _target; } set { _target = value; invokable = null; } }
@@ -18,6 +19,9 @@ public abstract class FunctionBase {
 	[SerializeField] private string _methodName;
 	[SerializeField] private Arg[] _args;
 	[SerializeField] private bool _dynamic;
+	#pragma warning disable 0414
+	[SerializeField] private string _typeName;
+	#pragma warning restore 0414
 	public bool Cached { get { return invokable != null; } }
 
 	[NonSerialized] protected InvokableFunctionBase invokable;
@@ -26,6 +30,10 @@ public abstract class FunctionBase {
 		if (target == null) return null;
 		if (!Cached) Cache();
 		return invokable != null ? invokable.Invoke(args) : null;
+	}
+
+	protected FunctionBase() {
+		_typeName =  base.GetType().AssemblyQualifiedName;
 	}
 
 	public void SetMethod(Object target, string methodName, bool dynamic, params Arg[] args) {
@@ -66,6 +74,13 @@ public abstract class FunctionBase {
 	/// <summary> Return a delegate with constant arguments </summary>
 	protected virtual InvokableFunctionBase GetDelegate(MethodInfo methodInfo, object target, object[] args) {
 		return new InvokableFunction(target, methodInfo, args);
+	}
+
+	public void OnBeforeSerialize() { }
+
+	public void OnAfterDeserialize() {
+		invokable = null;
+		_typeName = base.GetType().AssemblyQualifiedName;
 	}
 }
 

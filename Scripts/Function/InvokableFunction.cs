@@ -12,7 +12,7 @@ public class InvokableFunction : InvokableFunctionBase {
 	public InvokableFunction(object target, MethodInfo methodInfo, params object[] args) : base(target, methodInfo) {
 		func = CacheFunction(methodInfo, target, args);
 	}
-	
+
 	public override object Invoke(params object[] args) {
 		return func();
 	}
