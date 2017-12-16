@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
+[Serializable]
 public class Function : Function<bool> { }
 
 public abstract class Function<TReturn> : FunctionBase {
