@@ -41,5 +41,5 @@ namespace Dialogue {
     }
 
     [Serializable]
-    public class Condition : Function<bool> { }
+    public class Condition : SerializableCallback<bool> { }
 }

@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using XNode;
-using UnityEngine.Events;
 namespace Dialogue {
 	[NodeTint("#FFFFAA")]
 	public class Event : DialogueBaseNode {
 		[Input] public Connection input;
-		public Function trigger;
+		
+		public SerializableEvent[] trigger; // Could use UnityEvent here, but UnityEvent has a bug that prevents it from serializing correctly on custom EditorWindows. So i implemented my own.
 
 		public override void Trigger() {
-			trigger.Invoke();
+			for (int i = 0; i < trigger.Length; i++) {
+				trigger[i].Invoke();
+			}
 		}
 	}
 }
