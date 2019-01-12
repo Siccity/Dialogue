@@ -12,8 +12,8 @@ namespace Dialogue {
         public List<Answer> answers = new List<Answer>();
 
         [System.Serializable] public class Answer {
-            [TextArea] public string text;
-            public string portName;
+            public string text;
+            public AudioClip voiceClip;
         }
 
         public void AnswerQuestion(int index) {
@@ -22,7 +22,7 @@ namespace Dialogue {
                 port = GetOutputPort("output");
             } else {
                 if (answers.Count <= index) return;
-                port = GetOutputPort(answers[index].portName);
+                port = GetOutputPort("answers " + index);
             }
 
             if (port == null) return;
