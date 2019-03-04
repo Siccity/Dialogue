@@ -11,10 +11,9 @@ namespace Dialogue {
     [NodeTint("#CCCCFF")]
     public class Branch : DialogueBaseNode {
 
-        [Input] public Chat.Connection input;
         public Condition[] conditions;
-        [Output] public Chat.Connection pass;
-        [Output] public Chat.Connection fail;
+        [Output] public DialogueBaseNode pass;
+        [Output] public DialogueBaseNode fail;
 
         private bool success;
 

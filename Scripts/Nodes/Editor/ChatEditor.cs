@@ -8,14 +8,19 @@ namespace Dialogue {
     public class ChatEditor : NodeEditor {
 
         public override void OnBodyGUI() {
-            Chat dialogue = target as Chat;
-            GUILayout.BeginHorizontal();
-            NodeEditorGUILayout.PortField(target.GetInputPort("input"), GUILayout.Width(100));
+            serializedObject.Update();
+
+            Chat node = target as Chat;
+            if (node.answers.Count == 0) {
+                NodeEditorGUILayout.PortPair(target.GetInputPort("input"), target.GetOutputPort("output"));
+            } else {
+                NodeEditorGUILayout.PortField(target.GetInputPort("input"), GUILayout.Width(100));
+            }
             EditorGUILayout.Space();
-            if (dialogue.answers.Count == 0) NodeEditorGUILayout.PortField(target.GetOutputPort("output"), GUILayout.Width(100));
-            GUILayout.EndHorizontal();
             NodeEditorGUILayout.PropertyField(serializedObject.FindProperty("text"));
-            NodeEditorGUILayout.InstancePortList("answers", typeof(Chat.Answer), serializedObject, NodePort.IO.Output, Node.ConnectionType.Override);
+            NodeEditorGUILayout.InstancePortList("answers", typeof(DialogueBaseNode), serializedObject, NodePort.IO.Output, Node.ConnectionType.Override);
+
+            serializedObject.ApplyModifiedProperties();
         }
 
         public override int GetWidth() {
