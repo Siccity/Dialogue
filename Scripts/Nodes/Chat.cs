@@ -7,6 +7,7 @@ namespace Dialogue {
     [NodeTint("#CCFFCC")]
     public class Chat : DialogueBaseNode {
 
+        public CharacterInfo character;
         [TextArea] public string text;
         [Output(instancePortList = true)] public List<Answer> answers = new List<Answer>();
 
